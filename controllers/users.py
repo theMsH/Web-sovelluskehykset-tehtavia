@@ -1,21 +1,31 @@
 from flask import jsonify
-from repositories.users_mysql_repository import UsersMysqlRepository
-from repositories.users_postgres_repository import UsersPostgresRepository
+from werkzeug.exceptions import NotFound
+import models
+from repositories.repository_factory import users_repository_factory
 
+# Luodaan repository repository_factoryn avulla, niin voidaan helposti vaihtaa .envistä tietokantayhteys.
+repo = users_repository_factory()
 
-# Nyt jokaista controlleria vastaa yksi tiedosto. Tiedostot sisältävät kaikki funktiot,jotka pitävät
+# Jokaista controlleria vastaa yksi tiedosto. Tiedostot sisältävät kaikki funktiot, jotka pitävät
 # huolen requestin vastaanottamisesta ja responsen lähettämisestä.
 def get_all_users():
-    # Luodaan mysql reposta instanssi ja käytetään sitä.
-    #repo = UsersMysqlRepository()
-    repo = UsersPostgresRepository()
     users = repo.get_all()
-    users_json = []
-    for user in users:
-        users_json.append({
-            'id': user.id,
-            'username': user.username,
-            'firstname': user.firstname,
-            'lastname': user.lastname,
-        })
-    return jsonify(users_json)
+
+    # Hyödynnetään palautuksessa userin list_to_json funktiota, niin saadaan parempaa koodia.
+    return jsonify(models.User.list_to_json(users))
+
+
+def get_user_by_id(user_id):
+    # Tässä tietokantakysely voi todennäköisesti palauttaa tyhjää, joten lyödään virheenkäsittely tähän NotFoundin varalta
+    # Lähde toteutustapaan: Tehtävän 1 palautevideo
+    try:
+        user = repo.get_by_id(user_id)
+        return jsonify(models.User.to_json(user))
+
+    except NotFound:
+        return jsonify({'err': 'user not found'}), 404
+
+    # Napataan kiinni kaikki muu odottamaton virhe tässä, niin voidaan muotoilla virheet yhtenäiseksi json dataksi.
+    # Flask palauttaa defaultisti html:lää näissä tapauksissa.
+    except Exception as e:
+        return jsonify({'err': str(e)}), 500

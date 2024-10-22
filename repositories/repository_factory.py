@@ -2,12 +2,10 @@ import os
 from repositories.users_mysql_repository import UsersMysqlRepository
 from repositories.users_postgres_repository import UsersPostgresRepository
 
-# Factory pattern: määritellään repositorio
-
+# Factory pattern: määritellään enviin merkattu repositorio täällä.
 
 def users_repository_factory():
     _db = os.getenv("DB")
-    repo = None
 
     if _db == 'mysql':
         repo = UsersMysqlRepository()
