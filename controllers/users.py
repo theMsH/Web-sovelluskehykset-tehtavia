@@ -50,12 +50,26 @@ def update_user_by_id(user_id):
         user.firstname = data["firstname"]
         user.lastname = data["lastname"]
 
-        repo.update(user)
+        repo.save(user)
 
         return jsonify(models.User.to_json(user)), 200
 
     except NotFound:
         return jsonify({'err': 'user not found'}), 404
+
+    except Exception as e:
+        return jsonify({'err': str(e)}), 500
+
+
+def create_user():
+    try:
+        data = request.get_json()
+        # Palautevideolta opittu abstraktio: annetaan id:ksi nolla, koska siitä voidaan myöhemmin päätellä,
+        # että onko käyttäjä uusi vai olemassa oleva.
+        user = models.User(0, data["username"], data["firstname"], data["lastname"])
+        repo.save(user)
+
+        return jsonify(models.User.to_json(user)), 200
 
     except Exception as e:
         return jsonify({'err': str(e)}), 500

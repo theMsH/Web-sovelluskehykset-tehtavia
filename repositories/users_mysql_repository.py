@@ -48,7 +48,7 @@ class UsersMysqlRepository:
 
             return self.instantiate_user(user)
 
-    def update(self, user):
+    def _update(self, user):
         # Koska kyseessä on muokkaava kysely, käytetään virheenhallintaa täällä
         try:
             with self.con.cursor() as cur:
@@ -61,9 +61,24 @@ class UsersMysqlRepository:
             self.con.rollback()
             raise e
 
+    def _create(self, user):
+        try:
+            with self.con.cursor() as cur:
+                query = 'INSERT INTO users VALUES(0, %s, %s, %s)'
+                params = (user.username, user.firstname, user.lastname)
+                cur.execute(query, params)
+                self.con.commit()
+                # Päivitetään oikea id
+                user.id = cur.lastrowid
 
+        except Exception as e:
+            self.con.rollback()
+            raise e
 
-
-
-
-
+    # Palautevideolta opittua abstractiota
+    # Jos id:tä ei ole annettu, eli se on 0 (false), niin päivitetään käyttäjä.
+    def save(self, user):
+        if not user.id:
+            self._create(user)
+        else:
+            self._update(user)
