@@ -4,12 +4,12 @@ import models
 from repositories.repository_factory import users_repository_factory
 
 # Luodaan repository repository_factoryn avulla, niin voidaan helposti vaihtaa .envistä tietokantayhteys.
-repo = users_repository_factory()
 
 
 # Jokaista controlleria vastaa yksi tiedosto. Tiedostot sisältävät kaikki funktiot, jotka pitävät
 # huolen requestin vastaanottamisesta ja responsen lähettämisestä.
 def get_all_users():
+    repo = users_repository_factory()
     users = repo.get_all()
 
     # Hyödynnetään palautuksessa userin list_to_json funktiota, niin saadaan parempaa koodia.
@@ -20,6 +20,7 @@ def get_user_by_id(user_id):
     # Tässä tietokantakysely voi todennäköisesti palauttaa tyhjää, joten lyödään virheenkäsittely tähän NotFoundin varalta
     # Lähde toteutustapaan: Tehtävän 1 palautevideo
     try:
+        repo = users_repository_factory()
         user = repo.get_by_id(user_id)
         return jsonify(models.User.to_json(user)), 200
 
@@ -34,6 +35,7 @@ def get_user_by_id(user_id):
 
 def update_user_by_id(user_id):
     try:
+        repo = users_repository_factory()
         user = repo.get_by_id(user_id)
         data = request.get_json()
         '''
@@ -63,6 +65,7 @@ def update_user_by_id(user_id):
 
 def create_user():
     try:
+        repo = users_repository_factory()
         data = request.get_json()
         # Palautevideolta opittu abstraktio: annetaan id:ksi nolla, koska siitä voidaan myöhemmin päätellä,
         # että onko käyttäjä uusi vai olemassa oleva.
@@ -77,6 +80,7 @@ def create_user():
 
 def delete_user_by_id(user_id):
     try:
+        repo = users_repository_factory()
         repo.delete_by_id(user_id)
         return jsonify(), 204
 
