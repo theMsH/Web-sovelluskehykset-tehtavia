@@ -19,7 +19,7 @@ class UsersMysqlRepository:
 
     # Destructor: siivotaan jäljet sulkemalla yhteys, jos se on vielä olemassa. Muuten se täyttää muistin
     def __del__(self):
-        if self.con is not None and self.con.connected():
+        if self.con is not None and self.con.is_connected():
             self.con.close()
 
     # Tällä metodilla vähennän koodissa toistuvaa palauttelua
@@ -38,9 +38,9 @@ class UsersMysqlRepository:
             return users
 
     # Haetaan user id:n perusteella
-    def get_by_id(self, _id):
+    def get_by_id(self, user_id):
         with self.con.cursor() as cur:
-            cur.execute('SELECT * FROM users WHERE id = %s', (_id,))
+            cur.execute('SELECT * FROM users WHERE id = %s', (user_id,))
             user = cur.fetchone()
 
             if user is None:
@@ -82,3 +82,26 @@ class UsersMysqlRepository:
             self._create(user)
         else:
             self._update(user)
+
+
+    def delete_by_id(self, user_id):
+        try:
+            with self.con.cursor() as cur:
+                cur.execute('DELETE FROM users WHERE id = %s', (user_id,))
+
+                '''
+                Jos ei poistettu mitään, nostetaan NotFound. Teen tämän tänne siksi, 
+                koska requesti tullaan aina tekemään tietokantaan, 
+                tässä tapauksessa delete suoritetaan aina, vaikka ID:llä ei löydy käyttäjää.
+                Jos tekisin get_user_by_id requestin, tekisin joissain tapauksissa 2 requestia.
+                Ja ajattelin, että ihan sama tehdä se delete aina, jolloin tulis aina se 1 requesti joka tapauksessa.
+                '''
+
+                if not cur.rowcount:
+                    raise NotFound('user not found')
+
+                self.con.commit()
+
+        except Exception as e:
+            self.con.rollback()
+            raise e

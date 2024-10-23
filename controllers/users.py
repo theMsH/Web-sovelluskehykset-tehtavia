@@ -69,7 +69,19 @@ def create_user():
         user = models.User(0, data["username"], data["firstname"], data["lastname"])
         repo.save(user)
 
-        return jsonify(models.User.to_json(user)), 200
+        return jsonify(models.User.to_json(user)), 201
+
+    except Exception as e:
+        return jsonify({'err': str(e)}), 500
+
+
+def delete_user_by_id(user_id):
+    try:
+        repo.delete_by_id(user_id)
+        return jsonify(), 204
+
+    except NotFound:
+        return jsonify({'err': 'user not found'}), 404
 
     except Exception as e:
         return jsonify({'err': str(e)}), 500
