@@ -5,7 +5,9 @@ from controllers import users
 app = Flask(__name__)
 
 app.add_url_rule('/api/users', view_func=users.get_all_users, methods=["GET"])
-app.add_url_rule('/api/users/<user_id>', "user_id", users.get_user_by_id, methods=["GET"])
+app.add_url_rule('/api/users/<user_id>', view_func=users.get_user_by_id, methods=["GET"])
+app.add_url_rule('/api/users/<user_id>', view_func=users.update_user_by_id, methods=["PUT"])
+
 
 if __name__ == '__main__':
     load_dotenv()
