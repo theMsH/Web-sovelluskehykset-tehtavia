@@ -7,10 +7,12 @@ class User:
         self.firstname = firstname
         self.lastname = lastname
 
+
     # Opittu ensimmäisen tehtävän videopalautteesta.
     # Nämä funtiot vähentää toistuvaa json-konversio koodia
     def to_json(self):
         return {'id': self.id, 'username': self.username, 'firstname': self.firstname, 'lastname': self.lastname}
+
 
     @staticmethod
     def list_to_json(users):

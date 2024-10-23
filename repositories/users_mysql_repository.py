@@ -17,15 +17,18 @@ class UsersMysqlRepository:
     def __init__(self):
         self.con = mysql.connector.connect(user='root', database='sovelluskehykset_bad1')
 
+
     # Destructor: siivotaan jäljet sulkemalla yhteys, jos se on vielä olemassa. Muuten se täyttää muistin
     def __del__(self):
         if self.con is not None and self.con.is_connected():
             self.con.close()
 
+
     # Tällä metodilla vähennän koodissa toistuvaa palauttelua
     @staticmethod
     def instantiate_user(user):
         return models.User(user[0], user[1], user[2], user[3])
+
 
     def get_all(self):
         with self.con.cursor() as cur:
@@ -37,6 +40,7 @@ class UsersMysqlRepository:
 
             return users
 
+
     # Haetaan user id:n perusteella
     def get_by_id(self, user_id):
         with self.con.cursor() as cur:
@@ -47,6 +51,7 @@ class UsersMysqlRepository:
                 raise NotFound('user not found')
 
             return self.instantiate_user(user)
+
 
     def _update(self, user):
         # Koska kyseessä on muokkaava kysely, käytetään virheenhallintaa täällä
@@ -60,6 +65,7 @@ class UsersMysqlRepository:
         except Exception as e:
             self.con.rollback()
             raise e
+
 
     def _create(self, user):
         try:
