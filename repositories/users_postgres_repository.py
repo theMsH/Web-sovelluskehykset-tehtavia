@@ -1,8 +1,9 @@
 import psycopg2
-import models
+from repositories.user_repository import UserRepository
 
 
-class UsersPostgresRepository:
+class UsersPostgresRepository(UserRepository):
+
     def __init__(self):
         self.con = psycopg2.connect(
             user='postgres', host='localhost', password='salasana', dbname='sovelluskehykset_bad1')
@@ -11,12 +12,26 @@ class UsersPostgresRepository:
         if self.con is not None and not self.con.closed:
             self.con.close()
 
-    def get_all(self):
-        with self.con.cursor() as cur:
-            cur.execute('SELECT * FROM users')
-            result = cur.fetchall()
-            users = []
-            for user in result:
-                users.append(models.User(user[0], user[1], user[2], user[3]))
+    '''
+    Ylikirjoitetaan _create, koska postgre vaatii "RETURNING id" kyselyyn, jotta sieltä palautuisi luodessa oikea id.
+    Defaultisti insert ei siis palauta mitään. RETURNING vaatii yhteensopivan yhteyden, kuten psycopg2 tai asyncpg.
+    Vaikuttaa siltä, että cur.lastrowid tuetaan laajemmin, joten jätin sen parenttiin ns. defaultiksi
+    
+    Lähde: Chatgpt: "cursor.lastrowid returns 0 in postgre insert operation. Why?"
+    '''
+    def _create(self, user):
+        try:
+            with self.con.cursor() as cur:
+                query = 'INSERT INTO users(username, firstname, lastname) VALUES(%s, %s, %s) RETURNING id'
+                params = (user.username, user.firstname, user.lastname)
+                cur.execute(query, params)
 
-            return users
+                # cur.lastrowid ei toimi postgresissä, asetetaan tällätavoin oikea id,
+                # joka voidaan palauttaa viewiin aikanaan
+                user.id = cur.fetchone()[0]
+
+                self.con.commit()
+
+        except Exception as e:
+            self.con.rollback()
+            raise e
