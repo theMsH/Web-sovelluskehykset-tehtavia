@@ -17,8 +17,12 @@ app.add_url_rule('/api/users/<user_id>', "get_user_by_id", users.get_user_by_id,
 app.add_url_rule('/api/users/<user_id>', "put_user_by_id", users.update_user_by_id, methods=["PUT"])
 app.add_url_rule('/api/users/<user_id>', "delete_user_by_id", users.delete_user_by_id, methods=["DELETE"])
 
-# Tämän voi kiertää laittamalla metodit samaan url ruleen, mutta ne pitää sitten käsitellä kontrollerissa
-app.add_url_rule('/api/products', view_func=products.request_products, methods=["GET", "POST"])
+# Teen eri tyylillä productsille. Tämä tyyli on peräisin tehtävä 1, mutta vähän paremmin toteutettuna.
+app.add_url_rule(rule = '/api/products', endpoint = "products",
+                 view_func = products.request_products, methods = ["GET", "POST"])
+
+app.add_url_rule(rule = '/api/products/<product_id>', endpoint = "products/id",
+                 view_func = products.request_products_by_id, methods = ["GET", "PUT", "DELETE"])
 
 
 if __name__ == '__main__':
