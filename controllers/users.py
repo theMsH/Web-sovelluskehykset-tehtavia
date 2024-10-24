@@ -1,27 +1,47 @@
 from flask import jsonify, request
 from werkzeug.exceptions import NotFound
 import models
-from repositories.repository_factory import users_repository_factory
-
-# Luodaan repository repository_factoryn avulla, niin voidaan helposti vaihtaa .envistä tietokantayhteys.
-
+from decorators.db_conn import get_db_conn
+from decorators.repository_decorator import init_repository
 
 # Jokaista controlleria vastaa yksi tiedosto. Tiedostot sisältävät kaikki funktiot, jotka pitävät
 # huolen requestin vastaanottamisesta ja responsen lähettämisestä.
-def get_all_users():
-    repo = users_repository_factory()
-    users = repo.get_all()
+
+'''
+Decoraattori: dekoraattorin alapuolella olevasta functiosta tulee dekoraattorin route_handler_func,
+jolle dekoraattorin wrapper antaa parametriksi connectionin, *args ja **kwargs
+Decoraattoreita voi olla useita, ja dekoraattorille voi antaa parametrin. 
+
+Ensin luodaan tietokantayhteys @get_db_conn dekoraattorilla,
+sen jälkeen voidaan alustaa haluttu repositorio käyttämällä @init_repository()
+ja antamalla sille parametrinä haluttu repositorio.
+
+Nämä dekoraattorit pitää antaa kaikille routehändlereile
+
+Aiemmin täällä määriteltiin myös repo, mutta se repo määriytyy nykyään dekoraattorien avulla, ja palautuvassa 
+con muuttujassa on meillä toimiva yhteys haluttuun tietokantaan, joka käyttää haluttua repoa. Tämä con muuttuja
+välitetään route händlerille, joka tässä kyseisessä tiedostossa käyttää parent UserRepoa envissä määritellyn 
+tietokantayhteyden mukaan nimettyä child UserRepoa eli esim UsersMysqlRepository
+'''
+
+
+@get_db_conn
+@init_repository('users')
+def get_all_users(con):
+    users = con.get_all()
 
     # Hyödynnetään palautuksessa userin list_to_json funktiota, niin saadaan parempaa koodia.
     return jsonify(models.User.list_to_json(users)), 200
 
 
-def get_user_by_id(user_id):
-    # Tässä tietokantakysely voi todennäköisesti palauttaa tyhjää, joten lyödään virheenkäsittely tähän NotFoundin varalta
+@get_db_conn
+@init_repository('users')
+def get_user_by_id(con, user_id):
+    # Tässä tietokantakysely voi todennäköisesti palauttaa tyhjää,
+    # joten lyödään virheenkäsittely tähän NotFoundin varalta
     # Lähde toteutustapaan: Tehtävän 1 palautevideo
     try:
-        repo = users_repository_factory()
-        user = repo.get_by_id(user_id)
+        user = con.get_by_id(user_id)
         return jsonify(models.User.to_json(user)), 200
 
     except NotFound:
@@ -33,10 +53,11 @@ def get_user_by_id(user_id):
         return jsonify({'err': str(e)}), 500
 
 
-def update_user_by_id(user_id):
+@get_db_conn
+@init_repository('users')
+def update_user_by_id(con, user_id):
     try:
-        repo = users_repository_factory()
-        user = repo.get_by_id(user_id)
+        user = con.get_by_id(user_id)
         data = request.get_json()
         '''
         Käytin tässä aikaisemmin data.get('username'), joka piti määritellä uudestaan user.username :ksi,
@@ -52,7 +73,7 @@ def update_user_by_id(user_id):
         user.firstname = data["firstname"]
         user.lastname = data["lastname"]
 
-        repo.save(user)
+        con.save(user)
 
         return jsonify(models.User.to_json(user)), 200
 
@@ -63,14 +84,15 @@ def update_user_by_id(user_id):
         return jsonify({'err': str(e)}), 500
 
 
-def create_user():
+@get_db_conn
+@init_repository('users')
+def create_user(con):
     try:
-        repo = users_repository_factory()
         data = request.get_json()
         # Palautevideolta opittu abstraktio: annetaan id:ksi nolla, koska siitä voidaan myöhemmin päätellä,
         # että onko käyttäjä uusi vai olemassa oleva.
         user = models.User(0, data["username"], data["firstname"], data["lastname"])
-        repo.save(user)
+        con.save(user)
 
         return jsonify(models.User.to_json(user)), 201
 
@@ -78,10 +100,11 @@ def create_user():
         return jsonify({'err': str(e)}), 500
 
 
-def delete_user_by_id(user_id):
+@get_db_conn
+@init_repository('users')
+def delete_user_by_id(con, user_id):
     try:
-        repo = users_repository_factory()
-        repo.delete_by_id(user_id)
+        con.delete_by_id(user_id)
         return jsonify(), 204
 
     except NotFound:

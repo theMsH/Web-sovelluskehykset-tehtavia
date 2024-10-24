@@ -3,7 +3,7 @@ from repositories.user_repository import UserRepository
 
 
 class UsersPostgresRepository(UserRepository):
-
+    '''
     def __init__(self):
         self.con = psycopg2.connect(
             user='postgres', host='localhost', password='salasana', dbname='sovelluskehykset_bad1')
@@ -11,6 +11,10 @@ class UsersPostgresRepository(UserRepository):
     def __del__(self):
         if self.con is not None and not self.con.closed:
             self.con.close()
+    '''
+    def __init__(self, con):
+        self.con = con
+        super(UsersPostgresRepository, self).__init__(con)
 
     '''
     Ylikirjoitetaan _create, koska postgre vaatii "RETURNING id" kyselyyn, jotta sieltä palautuisi luodessa oikea id.

@@ -12,22 +12,20 @@ Eli tänne tulee nyt ne tietokantayhteydet ja kyselyt, jotka meni ennen modeliin
 Luokan metodit palauttavat vain User luokan instansseja tai tietyissä virhetapauksissa raise e yms.
 
 Mysql ja postgres repot periytyvät tästä, ja täällä on niille molemmille toimivaa koodia. Repofactory päättää
-mitä childiä käytetään, tätä ei käytetä, koska ei ole tietokanta yhteyttä.
+mitä childiä käytetään. Toimimattomat functiot ylikirjoitetaan siellä lapsirepossa, mikä vaatii erilaisen kyselyn.
 '''
+
 
 class UserRepository:
 
-    # Alustetaan yhteys Noneksi. Koska tätä ei repoa ei suoraan käytetä koodissa,
-    # vaan käytetään tästä periytyviä, yhteys luodaan siellä.
-    def __init__(self):
-        self.con = None
-
+    # Yhteys tietokantaan injektoidaan sieltä child reposta, jota tätä käytetään
+    def __init__(self, con):
+        self.con = con
 
     # Tällä metodilla vähennän koodissa toistuvaa palauttelua
     @staticmethod
     def instantiate_user(user):
         return models.User(user[0], user[1], user[2], user[3])
-
 
     def _create(self, user):
         try:
@@ -43,7 +41,6 @@ class UserRepository:
             self.con.rollback()
             raise e
 
-
     def get_all(self):
         with self.con.cursor() as cur:
             cur.execute('SELECT * FROM users')
@@ -53,7 +50,6 @@ class UserRepository:
                 users.append(self.instantiate_user(user))
 
             return users
-
 
     # Haetaan user id:n perusteella
     def get_by_id(self, user_id):
@@ -65,7 +61,6 @@ class UserRepository:
                 raise NotFound('user not found')
 
             return self.instantiate_user(user)
-
 
     def _update(self, user):
         # Koska kyseessä on muokkaava kysely, käytetään virheenhallintaa täällä
@@ -80,7 +75,6 @@ class UserRepository:
             self.con.rollback()
             raise e
 
-
     # Palautevideolta opittua abstractiota
     # Jos id:tä ei ole annettu, eli se on 0 (false), niin päivitetään käyttäjä.
     def save(self, user):
@@ -88,7 +82,6 @@ class UserRepository:
             self._create(user)
         else:
             self._update(user)
-
 
     def delete_by_id(self, user_id):
         try:
