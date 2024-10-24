@@ -15,7 +15,7 @@ class ProductsPostgresRepository(ProductsRepository):
                 cur.execute(query, params)
 
                 # Tässä ei tarvitse fetchaa mitään, koska meille välitettiin instanssi
-                product.id = cur.fetch
+                product.id = cur.fetchone()[0]
 
                 self.con.commit()
 
