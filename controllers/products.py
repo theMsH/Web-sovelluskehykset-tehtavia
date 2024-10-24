@@ -19,7 +19,7 @@ def request_products(con):
     if request.method == "GET":
         return _get_all_products(con)
 
-    elif request.method == "POST":
+    if request.method == "POST":
         return _create_product(con)
 
 '''
@@ -29,6 +29,11 @@ Ajatuksena kuitenkin, että tässä controllerissa on yksi funktio,
 jota clientti kutsuu jollain metodilla, 
 ja se clientin kutsuma funktio itse määrittelee mitä näistä muista funktioista se käyttää.
 '''
+
+def _get_all_products(con):
+    products = con.get_all()
+    return jsonify(models.Product.list_to_json(products)), 200
+
 
 def _create_product(con):
     try:
@@ -40,8 +45,3 @@ def _create_product(con):
 
     except Exception as e:
         return jsonify({'err': str(e)})
-
-
-def _get_all_products(con):
-    products = con.get_all()
-    return jsonify(models.Product.list_to_json(products)), 200
