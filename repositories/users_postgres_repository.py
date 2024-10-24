@@ -1,7 +1,7 @@
-from repositories.user_repository import UserRepository
+from repositories.users_repository import UsersRepository
 
 
-class UsersPostgresRepository(UserRepository):
+class UsersPostgresRepository(UsersRepository):
 
     def __init__(self, con):
         super(UsersPostgresRepository, self).__init__(con)

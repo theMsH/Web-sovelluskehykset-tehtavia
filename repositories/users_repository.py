@@ -16,7 +16,7 @@ mitä childiä käytetään. Toimimattomat functiot ylikirjoitetaan siellä laps
 '''
 
 
-class UserRepository:
+class UsersRepository:
 
     # Yhteys tietokantaan injektoidaan sieltä child reposta, jota tätä käytetään
     def __init__(self, con):

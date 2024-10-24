@@ -1,10 +1,10 @@
-from repositories.user_repository import UserRepository
+from repositories.users_repository import UsersRepository
 
 # Tämä perii userRepositoryn, ja syöttää sinne tietokantayhteyden.
 # Tämä myös huolehtii yhteyden sulkemisesta, koska se on eri kuin postgrellä
 
 
-class UsersMysqlRepository(UserRepository):
+class UsersMysqlRepository(UsersRepository):
     '''
     Tälläinenkin tapa on periaatteessa oikein, mutta tunneilla käytyjen esimerkkien perusteella voidaan tehdä
     koodi vieläkin modulaarisemmin
