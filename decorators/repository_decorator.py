@@ -1,5 +1,4 @@
 import os
-
 from repositories.repository_factory import users_repository_factory
 
 

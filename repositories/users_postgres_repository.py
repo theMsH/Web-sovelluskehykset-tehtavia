@@ -1,19 +1,9 @@
-import psycopg2
 from repositories.user_repository import UserRepository
 
 
 class UsersPostgresRepository(UserRepository):
-    '''
-    def __init__(self):
-        self.con = psycopg2.connect(
-            user='postgres', host='localhost', password='salasana', dbname='sovelluskehykset_bad1')
 
-    def __del__(self):
-        if self.con is not None and not self.con.closed:
-            self.con.close()
-    '''
     def __init__(self, con):
-        self.con = con
         super(UsersPostgresRepository, self).__init__(con)
 
     '''
@@ -23,6 +13,8 @@ class UsersPostgresRepository(UserRepository):
     
     Lähde: Chatgpt: "cursor.lastrowid returns 0 in postgre insert operation. Why?"
     '''
+
+    # Tässä on 2 poikkeavuutta mysql versioon nähden, query ja user.id määrittelyn koodi.
     def _create(self, user):
         try:
             with self.con.cursor() as cur:

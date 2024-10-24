@@ -1,4 +1,3 @@
-import mysql.connector
 from repositories.user_repository import UserRepository
 
 # Tämä perii userRepositoryn, ja syöttää sinne tietokantayhteyden.
