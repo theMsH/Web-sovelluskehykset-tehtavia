@@ -2,8 +2,16 @@ import models
 
 
 class ProductsRepository:
+
     def __init__(self, con):
         self.con = con
+
+
+    def save(self, product):
+        if product:
+            self._create(product)
+        else:
+            pass
 
 
     def _create(self, product):
@@ -16,15 +24,11 @@ class ProductsRepository:
                 # Tässä ei tarvitse fetchaa mitään, koska meille välitettiin instanssi
                 product.id = cur.lastrowid
 
+                self.con.commit()
+
         except Exception as e:
+            self.con.rollback()
             raise e
-
-
-    def save(self, product):
-        if product:
-            self._create(product)
-        else:
-            pass
 
 
     def get_all(self):
