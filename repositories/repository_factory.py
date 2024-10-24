@@ -1,5 +1,5 @@
 import os
-from repositories.ProductsPostgresRepository import ProductsPostgresRepository
+from repositories.products_postgres_repository import ProductsPostgresRepository
 from repositories.products_mysql_repository import ProductsMysqlRepository
 from repositories.users_mysql_repository import UsersMysqlRepository
 from repositories.users_postgres_repository import UsersPostgresRepository
