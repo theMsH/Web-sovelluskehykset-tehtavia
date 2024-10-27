@@ -1,4 +1,5 @@
 import os
+from repositories.users_from_src_repository import UsersFromSrcRepository
 from repositories.products_postgres_repository import ProductsPostgresRepository
 from repositories.products_mysql_repository import ProductsMysqlRepository
 from repositories.users_mysql_repository import UsersMysqlRepository
@@ -24,12 +25,16 @@ def repository_factory(con, name):
             repo = UsersMysqlRepository(con)
         elif name == 'products':
             repo = ProductsMysqlRepository(con)
+        elif name == 'external sources':
+            repo = UsersFromSrcRepository(con)
 
     elif _db == 'postgres':
         if name == 'users':
             repo = UsersPostgresRepository(con)
         elif name == 'products':
             repo = ProductsPostgresRepository(con)
+        elif name == 'external sources':
+            repo = UsersFromSrcRepository(con)
 
     return repo
 

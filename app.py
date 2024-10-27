@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 from flask import Flask
-from controllers import users, products
+from controllers import users, products, users_from_src
 
 app = Flask(__name__)
 
@@ -23,6 +23,19 @@ app.add_url_rule(rule = '/api/products', endpoint = "products",
 
 app.add_url_rule(rule = '/api/products/<product_id>', endpoint = "products/id",
                  view_func = products.request_products_by_id, methods = ["GET", "PUT", "DELETE"])
+
+'''
+Tehtävän 3 koodia
+
+Tavoitteena oli luoda route, jossa ulkoisen lähteen käsittelyyn on oma controller, ja että routeen olisi helppo
+jatkossa lisätä myös muita ulkoisia lähteitä, joista saa luotua User instansseja.
+'''
+app.add_url_rule('/api/users-from-source/<src>','users-from-source/src',
+                 view_func = users_from_src.request_users_from_src, methods = ['GET'])
+
+# Ei ollut tehtävänannossa, mutta huvikseni testailen kahden parametrin requestia
+app.add_url_rule('/api/users-from-source/<src>/<user_id>','users-from-source/src/id',
+                 view_func = users_from_src.request_user_from_src, methods = ['GET'])
 
 
 if __name__ == '__main__':
