@@ -1,4 +1,3 @@
-import os
 from repositories.repository_factory import repository_factory
 
 

@@ -1,5 +1,9 @@
-# Websovelluskehykset Tehtävä 2
-- Install venv and requirements
+# Websovelluskehykset tehtävien repo
+- Tehtävä 2
+- Tehtävä 3
+
+
+### Install venv and requirements
 ```
 python -m venv venv
 ```
