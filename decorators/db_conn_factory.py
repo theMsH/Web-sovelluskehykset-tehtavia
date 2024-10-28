@@ -2,6 +2,8 @@ import contextlib
 import os
 import mysql.connector
 import psycopg2
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 
 
 # Tunneilla käytyä:
@@ -20,6 +22,11 @@ def init_db_conn():
         elif _db == 'postgres':
             con = psycopg2.connect(
                 user='postgres', host='localhost', password='salasana', dbname='sovelluskehykset_bad1')
+
+        elif _db == 'mongo':
+            # Koodit yhteyden luontiin löytyi mongo db:n sivuilta, kun loi uuden clusterin ja haki siihen esimerkkikoodin
+            # pythonille ja opetusmateriaaleista. Latasin paikallisen mongodb softan ja nyt client käyttää localhost
+            con = MongoClient(host='mongodb://localhost:27017/', server_api=ServerApi('1'))
 
         yield con
 

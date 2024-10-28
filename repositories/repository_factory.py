@@ -2,6 +2,7 @@ import os
 from repositories.users_from_src_repository import UsersFromSrcRepository
 from repositories.products_postgres_repository import ProductsPostgresRepository
 from repositories.products_mysql_repository import ProductsMysqlRepository
+from repositories.users_mongo_repository import UsersMongoRepository
 from repositories.users_mysql_repository import UsersMysqlRepository
 from repositories.users_postgres_repository import UsersPostgresRepository
 
@@ -25,16 +26,21 @@ def repository_factory(con, name):
             repo = UsersMysqlRepository(con)
         elif name == 'products':
             repo = ProductsMysqlRepository(con)
-        elif name == 'external sources':
-            repo = UsersFromSrcRepository(con)
 
     elif _db == 'postgres':
         if name == 'users':
             repo = UsersPostgresRepository(con)
         elif name == 'products':
             repo = ProductsPostgresRepository(con)
-        elif name == 'external sources':
-            repo = UsersFromSrcRepository(con)
+
+    # Tehtävän 4 koodi
+    elif _db == 'mongo':
+        if name == 'users':
+            repo = UsersMongoRepository(con)
+
+    # Tehtävän 3 koodi
+    if name == 'external sources':
+        repo = UsersFromSrcRepository(con)
 
     return repo
 
