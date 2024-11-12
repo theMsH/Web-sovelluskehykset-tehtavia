@@ -32,6 +32,7 @@ def request_products(con):
     except NotFound:
         return jsonify({'err': 'products not found'}), 404
 
+    # Tämän haasteena on jäljittää virheitä, joten devi vaiheessa kommentoin tämän.
     except Exception as e:
         return jsonify({'err': str(e)}), 500
 '''

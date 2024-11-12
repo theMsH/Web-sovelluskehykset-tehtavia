@@ -23,6 +23,10 @@ def init_repository(name):
             # Tai sitten ihan vaan:
             repo = repository_factory(con, name)
 
+            # Tehtävän 2 palautevideolta saatu vinkki: Nostetaan virhe, jos repo ei pystytty asettamaan.
+            if repo is None:
+                raise Exception(f"Repo is not initialized. Repository name used: {name}")
+
             # Aina pitää muistaa palauttaa potentiaaliset *args ja **kwargs, jottei decoraattori hajoa.
             return route_handler_func(repo, *args, **kwargs)
         return wrapper

@@ -1,4 +1,6 @@
 import os
+
+from repositories.products_mongo_repository import ProductsMongoRepository
 from repositories.users_from_src_repository import UsersFromSrcRepository
 from repositories.products_postgres_repository import ProductsPostgresRepository
 from repositories.products_mysql_repository import ProductsMysqlRepository
@@ -37,6 +39,8 @@ def repository_factory(con, name):
     elif _db == 'mongo':
         if name == 'users':
             repo = UsersMongoRepository(con)
+        if name == 'products':
+            repo = ProductsMongoRepository(con)
 
     # Tehtävän 3 koodi
     if name == 'external sources':
