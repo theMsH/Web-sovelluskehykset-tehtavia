@@ -64,11 +64,15 @@ class VehiclesRepository:
         try:
             with self.con.cursor() as cur:
                 cur.execute('DELETE FROM vehicles WHERE id = %s', (vehicle_id,))
-
+                # Laitoin tämän palauttamaan booleanin määrittämään onnistuiko poisto vai ei.
+                # Jos se ei onnistu, se tarkoittaa että ajoneuvoa ei löytynyt.
+                # Näin saan siirretty tämänkin controllerin huoleksi täysin
                 if not cur.rowcount:
-                    raise NotFound('vehicle not found')
+                    return False
+                    #raise NotFound
 
                 self.con.commit()
+                return True
 
         except Exception as e:
             self.con.rollback()

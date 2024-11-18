@@ -5,7 +5,8 @@ from decorators.repository_decorator import init_repository
 from models import Vehicle
 
 """
-Käytän samaa logiikkaa kuin productseissa.
+Käytän samaa logiikkaa kuin productseissa, pienillä muokkauksilla
+Esim reposta palautuu exeptionin sijaan none, jos ei löyty ajoneuvoa ja se käsitellään sitten täällä.
 """
 
 @get_db_conn
@@ -66,6 +67,10 @@ def get_vehicle_by_id(con, vehicle_id):
 
 def update_vehicle_by_id(con, vehicle_id):
     vehicle: Vehicle = con.get_by_id(vehicle_id)
+    # Tämä tarkistus tapahtui muissa controllereissa siten, että repoissa get_by_id nosti notfound virheen.
+    # Tämä täytyy lisätä nyt tähän, koska laitoin sen palauttamaan Nonen
+    if vehicle is None:
+        raise NotFound
     data = request.get_json()
     vehicle.make = data["make"]
     vehicle.model = data["model"]
@@ -73,5 +78,7 @@ def update_vehicle_by_id(con, vehicle_id):
     return jsonify(Vehicle.to_json(vehicle)), 200
 
 def delete_vehicle_by_id(con, vehicle_id):
-    con.delete_by_id(vehicle_id)
+    # Laitoin delete_by_id palauttamaan booleanin siitä, onnistuiko poisto, jolloin voin siirtää käsittelyn tänne tänne.
+    if not con.delete_by_id(vehicle_id):
+        raise NotFound
     return jsonify(), 204
