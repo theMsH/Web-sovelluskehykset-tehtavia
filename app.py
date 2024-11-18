@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 from flask import Flask
-from controllers import users, products, users_from_src
+from controllers import users, products, users_from_src, vehicles
 
 app = Flask(__name__)
 
@@ -36,6 +36,12 @@ app.add_url_rule('/api/users-from-source/<src>','users-from-source/src',
 # Ei ollut tehtävänannossa, mutta huvikseni testailen kahden parametrin requestia
 app.add_url_rule('/api/users-from-source/<src>/<user_id>','users-from-source/src/id',
                  view_func = users_from_src.request_user_from_src, methods = ['GET'])
+
+# Tehtävä 5
+app.add_url_rule('/api/vehicles','vehicles',
+                 view_func = vehicles.request_vehicles, methods = ["GET", "POST"])
+app.add_url_rule('/api/vehicles/<vehicle_id>','vehicles/id',
+                 view_func = vehicles.request_vehicle_by_id, methods = ["GET", "PUT", "DELETE"])
 
 
 if __name__ == '__main__':

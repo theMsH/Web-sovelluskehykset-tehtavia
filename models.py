@@ -35,3 +35,23 @@ class Product:
         for product in products:
             res.append(product.to_json())
         return res
+
+
+class Vehicle:
+    def __init__(self, _id, make, model):
+        self.id = _id
+        self.make = make
+        self.model = model
+
+    def to_json(self):
+        return {'id': self.id, 'make': self.make, 'model': self.model}
+
+    # Tämän staticmethodin varmaan saisi jotenkin yhdistettyä noiden muiden kanssa, kunhan vain saisi välittettyä
+    # tiedon, minkä classin to_json() halutaan käyttää.
+    @staticmethod
+    def list_to_json(vehicles):
+        res = []
+        for vehicle in vehicles:
+            res.append(vehicle.to_json())
+        return res
+

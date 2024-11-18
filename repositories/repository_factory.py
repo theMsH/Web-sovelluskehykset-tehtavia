@@ -1,5 +1,4 @@
 import os
-
 from repositories.products_mongo_repository import ProductsMongoRepository
 from repositories.users_from_src_repository import UsersFromSrcRepository
 from repositories.products_postgres_repository import ProductsPostgresRepository
@@ -7,7 +6,7 @@ from repositories.products_mysql_repository import ProductsMysqlRepository
 from repositories.users_mongo_repository import UsersMongoRepository
 from repositories.users_mysql_repository import UsersMysqlRepository
 from repositories.users_postgres_repository import UsersPostgresRepository
-
+from repositories.vehicles_mysql_repository import VehiclesMysqlRepository
 
 """
 Factory pattern: määritellään enviin merkattu repositorio täällä.
@@ -28,19 +27,28 @@ def repository_factory(con, name):
             repo = UsersMysqlRepository(con)
         elif name == 'products':
             repo = ProductsMysqlRepository(con)
+        # Tehtävä 5 lisäys
+        if name == 'vehicles':
+            repo = VehiclesMysqlRepository(con)
 
     elif _db == 'postgres':
         if name == 'users':
             repo = UsersPostgresRepository(con)
         elif name == 'products':
             repo = ProductsPostgresRepository(con)
+        # Tehtävä 5 lisäys
+        if name == 'vehicles':
+            raise Exception("vehicles postgre not fully implemented")
 
     # Tehtävän 4 koodi
     elif _db == 'mongo':
         if name == 'users':
             repo = UsersMongoRepository(con)
-        if name == 'products':
+        elif name == 'products':
             repo = ProductsMongoRepository(con)
+        # Tehtävä 5 lisäys
+        elif name == 'vehicles':
+            raise Exception("vehicles mongo not implemented")
 
     # Tehtävän 3 koodi
     if name == 'external sources':
