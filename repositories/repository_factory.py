@@ -6,6 +6,7 @@ from repositories.products_mysql_repository import ProductsMysqlRepository
 from repositories.users_mongo_repository import UsersMongoRepository
 from repositories.users_mysql_repository import UsersMysqlRepository
 from repositories.users_postgres_repository import UsersPostgresRepository
+from repositories.vehicles_mongo_repository import VehiclesMongoRepository
 from repositories.vehicles_mysql_repository import VehiclesMysqlRepository
 from repositories.vehicles_postgres_repository import VehiclesPostgresRepository
 
@@ -49,7 +50,7 @@ def repository_factory(con, name):
             repo = ProductsMongoRepository(con)
         # Tehtävä 5 lisäys
         elif name == 'vehicles':
-            raise Exception("vehicles mongo not implemented")
+            repo = VehiclesMongoRepository(con)
 
     # Tehtävän 3 koodi
     if name == 'external sources':

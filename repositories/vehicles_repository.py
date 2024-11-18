@@ -42,7 +42,7 @@ class VehiclesRepository:
 
             return Vehicle(vehicle[0], vehicle[1], vehicle[2])
 
-    def _update(self, vehicle: Vehicle):
+    def _update_by_id(self, vehicle: Vehicle):
         try:
             with self.con.cursor() as cur:
                 query = 'UPDATE vehicles SET make = %s, model = %s WHERE id = %s'
@@ -58,7 +58,7 @@ class VehiclesRepository:
         if not vehicle.id:
             self._create(vehicle)
         else:
-            self._update(vehicle)
+            self._update_by_id(vehicle)
 
     def delete_by_id(self, vehicle_id):
         try:
